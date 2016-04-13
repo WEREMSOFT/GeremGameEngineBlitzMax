@@ -1,0 +1,6 @@
+*.bak
+*.debug
+*.debug.app
+.bmx/
+**/*.back
+
