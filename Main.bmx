@@ -1,31 +1,27 @@
 SuperStrict
 Import "objects\WeremEngine.bmx"
-Import "Intro.bmx"
-Import "objects\DebugText.bmx"
+
+Import "Level1.bmx"
+Import "LevelHandler.bmx"
+
 
 SetGraphicsDriver GLMax2DDriver()
 
 
 
-Graphics 640, 480
+Graphics 640, 480, 16
 
 WE.setFPS(30);
 
 
-SetClsColor(0, 100, 100)
-Local myIntro:Intro = New Intro
-myIntro.init()
+SetClsColor(0, 0, 0)
 
-WE.addChild(myIntro)
+Local lh:levelHandler = New LevelHandler
 
-Local myDebugText:DebugText = New DebugText
-WE.addChild(myDebugText)
+lh.init()
 
 While Not KeyHit( KEY_ESCAPE )
-
 	WE.update
-	WE.preDraw
 	WE.draw
-	WE.postDraw
 EndWhile
 

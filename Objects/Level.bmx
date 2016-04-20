@@ -1,15 +1,16 @@
 SuperStrict
 Import "gameobject.bmx"
-
+Import "WeremEngine.bmx"
 Type Level Extends GameObject 
 	Field alpha:Float = 1
+
 	Const STATE_FADE_FROM_BLACK:Int = 0
 	Const STATE_FADE_TO_BLACK:Int = 1
 	Const STATE_RUN:Int = 2
 	
 	
 	
-	
+	Field targetLevelOnFinish:Level
 	
 	Method init()
 		passToStateFadeFromBlack()
@@ -37,8 +38,8 @@ Type Level Extends GameObject
 	EndMethod
 	
 	Method passToStateFadeToBlack()
-		state = STATE_FADE_FROM_BLACK;
-		alpha = 0
+		state = STATE_FADE_TO_BLACK;
+		alpha = 1
 	EndMethod
 	
 	Method processStateRun()
@@ -49,16 +50,15 @@ Type Level Extends GameObject
 	EndMethod 
 	
 	Method processStateFadeToBlack()
-		alpha:-0.1
+		alpha:-0.01
 		SetBlend ALPHABLEND
 		SetAlpha alpha
 		If alpha <= 0 Then
-			passToStateRun()
+			onLevelFinished()
 		EndIf
 	EndMethod
 	
 	Method processStateFadeFromBlack()
-		DrawText(String.fromFloat(alpha), 100, 100)
 		alpha:+0.01
 		SetBlend ALPHABLEND
 		SetAlpha alpha
@@ -66,4 +66,11 @@ Type Level Extends GameObject
 			passToStateRun()
 		EndIf
 	EndMethod
+	
+	Method onLevelFinished()
+		WE.removeChild(Self)
+		WE.addChild(targetLevelOnFinish);
+		targetLevelOnFinish.passToStateFadeFromBlack()
+	EndMethod
+
 EndType

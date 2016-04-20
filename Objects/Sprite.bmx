@@ -1,0 +1,122 @@
+SuperStrict
+Import "gameobject.bmx"
+Import "weremEngine.bmx"
+
+Type Sprite Extends GameObject
+	Field w:Int
+	Field h:Int
+	Field colorR:Int
+	Field colorG:Int
+	Field colorB:Int
+	Field objectToFollow:GameObject
+	Field followOffsetX:Int = 0
+	Field followOffsetY:Int = 0
+	
+	Function CreateSprite:Sprite()
+		Local ReturnValue:Sprite = New Sprite
+		returnValue.init()		
+		Return returnValue
+	EndFunction
+	
+	Function RectsOverlap:Int(r1:Sprite, r2:Sprite)
+		Return ((r1.x + r1.w > r2.x) And (r1.y + r1.h > r2.y) And (r1.x < r2.x + r2.w) And (r1.y < r2.y + r2.h))
+	End Function
+	
+	
+	Method Overlap:Int(otherRect:Sprite)
+		Return RectsOverlap(Self, otherRect)
+	End Method
+	
+	Method init()
+		w = 100
+		h = 100
+		colorR = Rand(0, 255)
+		colorG = Rand(0, 255)
+		colorB = Rand(0, 255)
+	EndMethod
+	
+	Method update()
+		Super.update()
+		If(objectToFollow)
+			x = objectToFollow.x + followOffsetX
+			y = objectToFollow.y + followOffsetY
+		EndIf
+	EndMethod
+	
+	Method predraw()
+		Super.predraw()
+		SetColor(colorR, colorG, colorB)
+		DrawRect(x, y, w, h)
+	EndMethod
+	
+	Method follow(obj:GameObject, offsetX:Int = 0, offsetY:Int = 0)
+		objectToFollow = obj
+		followOffsetX = offsetX
+		followOffsetY = offsetY
+	EndMethod
+	
+	Method collidesAB(sp:Sprite)
+		collisionReaction(Self, sp)
+	EndMethod
+
+	Method collidesBA(sp:Sprite)
+		collisionReaction(sp, Self)
+	EndMethod
+	
+	Function collisionReaction(rect1:Sprite, rect2:Sprite)
+		'process X axis
+		Local containsX:Int = False
+		Local containsY:Int = False
+		Local xPenetration:Int = 0;
+		Local yPenetration:Int = 0;
+		Local A:Int = rect1.x
+		Local B:Int = rect1.x + rect1.w
+		Local C:Int = rect2.x
+		Local D:Int = rect2.x + rect2.w
+		
+		If A > C And B < C Then
+			containsX = True
+		EndIf
+		
+		If (B - C >= 0 And D - A >=0 ) Then
+			xPenetration = Max(A, C) - Min(B, D)
+			If A < C Then
+				xPenetration:*(-1)
+			EndIf
+		EndIf
+		
+		A = rect1.y
+		B = rect1.y + rect1.h
+		C = rect2.y
+		D = rect2.y + rect2.h
+		
+		If A > C And B < C Then
+			containsY = True
+		EndIf
+		
+		If B - C >= 0 And D - A >=0  Then
+			yPenetration = Max(A, C) - Min(B, D)
+			If A < C Then
+				yPenetration:*(-1)
+			EndIf
+		EndIf
+		
+		If containsX Then
+			rect2.y:+yPenetration
+		ElseIf containsY Then
+			rect2.x:+xPenetration
+		ElseIf  Abs(yPenetration) < Abs(xPenetration) Then
+			rect2.y:+yPenetration
+		Else
+			rect2.x:+xPenetration	
+		EndIf
+		
+	EndFunction
+
+	
+EndType
+
+
+
+
+

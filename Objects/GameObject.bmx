@@ -6,6 +6,10 @@ Type GameObject
 	Field x:Int = 0
 	Field y:Int = 0
 	Field state:Int = 0
+	
+	Method init()
+	EndMethod
+	
 	Method addChild(pChild:GameObject)
 		ListAddLast(childs, pChild)
 	EndMethod

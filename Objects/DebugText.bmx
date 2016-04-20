@@ -7,7 +7,8 @@ Type DebugText Extends GameObject
 	Field textToDebug:String = "--------"
 	Field textPosition:Int =  TextHeight(textToDebug)
 	Global lastUpdate:Int = MilliSecs() 
-	Method draw()
+	Method postdraw()
+		Super.postDraw()
 		Local elapsedTime:Int = (MilliSecs() - lastUpdate)
 		Local FPS:Int = 1000
 		If elapsedTime <> 0 Then
@@ -15,13 +16,10 @@ Type DebugText Extends GameObject
 		EndIf
 		SetColor(255, 255, 255) 
 		DrawText("FPS: " + String.fromInt(FPS), 0, 0)
-		DrawText("MEM: " +  GCMemAlloced(), 0, textPosition)
-		DrawText("Update: " +  WE.elapsedTime, 0, textPosition * 2)
-		Super.draw()
+		DrawText("Elapsed Time: " +  String.fromInt(elapsedTime), 0, textPosition)
+		DrawText("MEM: " +  GCMemAlloced(), 0, textPosition * 2)
+		DrawText("Update: " +  WE.elapsedTime, 0, textPosition * 3)
 		lastUpdate = MilliSecs()
 	EndMethod
-	
-	Method update()
-		Super.update
-	EndMethod
+
 EndType
