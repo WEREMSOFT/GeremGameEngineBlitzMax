@@ -24,6 +24,8 @@ Type Level1 Extends Level
 		sprite1.x = 100
 		sprite1.y = 200
 
+		sprite1.w = 10
+		sprite1.h = 10
 		addChild(h)
 		addChild(sprite1)
 	
@@ -42,7 +44,7 @@ Type Level1 Extends Level
 		x:+1
 		
 		If(h.Overlap(sprite1))
-			h.collidesBA(sprite1)
+			sprite1.collidesBA(h)
 			SetColor(255, 0, 0)
 			Local text:String = "Collided!!"
 			DrawRect(200, 0, TextWidth(text), TextHeight(text))

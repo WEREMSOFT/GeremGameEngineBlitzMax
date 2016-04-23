@@ -1,6 +1,6 @@
 SuperStrict
 Import "gameobject.bmx"
-Import "weremEngine.bmx"
+
 
 Type Sprite Extends GameObject
 	Field w:Int
@@ -11,10 +11,14 @@ Type Sprite Extends GameObject
 	Field objectToFollow:GameObject
 	Field followOffsetX:Int = 0
 	Field followOffsetY:Int = 0
+	Field alpha:Float = 1.0
+	Field debug:Int = True
 	
-	Function CreateSprite:Sprite()
+	Function CreateSprite:Sprite(pX:Int = 0, pY:Int = 0)
 		Local ReturnValue:Sprite = New Sprite
-		returnValue.init()		
+		returnValue.init()
+		returnValue.x = pX
+		returnValue.y = pY		
 		Return returnValue
 	EndFunction
 	
@@ -43,10 +47,24 @@ Type Sprite Extends GameObject
 		EndIf
 	EndMethod
 	
+	Method debugDraw()
+		Local blendMode:Int = GetBlend()
+		SetBlend ALPHABLEND
+		Local r:Int, g:Int, b:Int
+		GetColor(r, g, b)
+		SetColor(colorR, colorG, colorB)
+		SetAlpha(alpha) 
+		DrawRect(x, y, w, h)
+		SetAlpha(1)
+		SetColor(r, g, b)
+		SetBlend(blendMode)
+	EndMethod
+	
 	Method predraw()
 		Super.predraw()
-		SetColor(colorR, colorG, colorB)
-		DrawRect(x, y, w, h)
+		If debug Then
+			debugDraw()
+		EndIf
 	EndMethod
 	
 	Method follow(obj:GameObject, offsetX:Int = 0, offsetY:Int = 0)

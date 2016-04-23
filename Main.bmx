@@ -1,4 +1,5 @@
 SuperStrict
+
 Import "objects\WeremEngine.bmx"
 
 Import "Level1.bmx"
@@ -9,7 +10,7 @@ SetGraphicsDriver GLMax2DDriver()
 
 
 
-Graphics 640, 480, 16
+Graphics 640, 480, 32
 
 WE.setFPS(30);
 
@@ -20,8 +21,12 @@ Local lh:levelHandler = New LevelHandler
 
 lh.init()
 
-While Not KeyHit( KEY_ESCAPE )
-	WE.update
+While Not KeyHit(KEY_ESCAPE)
+ 	WE.update
 	WE.draw
+
+	If EventID() = EVENT_WINDOWCLOSE Then
+		End
+	EndIf
 EndWhile
 
