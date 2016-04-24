@@ -3,9 +3,8 @@ SuperStrict
 Import "objects\Sprite.bmx"
 Import "objects\weremEngine.bmx"
 
-Global My_Animation:TImage = LoadAnimImage("Media/PapersPlease.png",64,64,0,17)
-
 Type Hero Extends Sprite
+	Field My_Animation:TImage 
 	Field frameRate:Int = 1000/15
 	Field angle:Double = 0.0
 	Field amplitude:Int = 10
@@ -15,6 +14,8 @@ Type Hero Extends Sprite
 	Field flipped:Int = 1
 	Field lastPositionX:Int = 0
 	Field lastPositionY:Int = 0
+	Field imageOffsetX:Int = 8
+	Field imageOffsetY:Int = 18
 	
 	
 	Global STATE_IDLE:Int = 0
@@ -22,15 +23,19 @@ Type Hero Extends Sprite
 	
 	Function createHero:Hero()
 		Local returnValue:Hero = New Hero
+
 		returnValue.init()
 		Return returnValue		
 	EndFunction
 	
 	Method init()
 		Super.init()
+		AutoMidHandle(True)
+		debug = False
+		My_Animation = LoadAnimImage("Media/PapersPlease.png",64,64,0,17)
 		state = Hero.STATE_RUNNING
-		w = 64
-		h = 64
+		w = 14
+		h = 33
 		'SetImageHandle(my_animation, 32, 64)
 	EndMethod
 	
@@ -100,9 +105,9 @@ Type Hero Extends Sprite
 		SetTransform 0, flipped, 1
 		Local imageOffset:Int = 0
 		If flipped < 0 Then
-			imageOffset = 64
+			'imageOffset = 64
 		EndIf
-		DrawImage(My_Animation,x + imageOffset,y,Frame)
+		DrawImage(My_Animation,x + imageOffsetX,y + imageOffsetY,Frame)
 		SetTransform 0, 1, 1
 	EndMethod
 	
@@ -110,10 +115,10 @@ Type Hero Extends Sprite
 		SetTransform 0, flipped, 1
 		Local imageOffset:Int = 0
 		If flipped < 0 Then
-			imageOffset = 64
+			'imageOffset = 64
 		EndIf
 		
-		DrawImage(My_Animation,x + imageOffset,y,0)
+		DrawImage(My_Animation,x + imageOffsetX,y + imageOffsetY,Frame)
 		SetTransform 0, 1, 1
 	EndMethod
 	
