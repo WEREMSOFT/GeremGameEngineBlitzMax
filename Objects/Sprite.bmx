@@ -14,11 +14,13 @@ Type Sprite Extends GameObject
 	Field alpha:Float = 1.0
 	Field debug:Int = True
 	
-	Function CreateSprite:Sprite(pX:Int = 0, pY:Int = 0)
+	Function CreateSprite:Sprite(pX:Int = 0, pY:Int = 0, pW:Int = 0, pH:Int = 0)
 		Local ReturnValue:Sprite = New Sprite
 		returnValue.init()
 		returnValue.x = pX
-		returnValue.y = pY		
+		returnValue.w = pW
+		returnValue.y = pY
+		returnValue.h = pH		
 		Return returnValue
 	EndFunction
 	

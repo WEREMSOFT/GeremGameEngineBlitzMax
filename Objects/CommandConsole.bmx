@@ -7,7 +7,7 @@ Type CommandConsole Extends Sprite
 	Field commands:TList = CreateList()
 	Const STATE_IDLE:Int = 10
 	Const STATE_ACTIVE:Int = 20
-	Field commandEnteredCallback:Int()
+	Field commandEnteredCallback:Int(pCommand:String)
 	Field visible:Int = False
 	Field currentCommand:String = ""
 	Field textX:Int = 0
@@ -62,6 +62,8 @@ Type CommandConsole Extends Sprite
 				ListAddLast(commands, ">" + currentCommand)
 				processCommand(currentCommand)
 				currentCommand = ""
+			ElseIf c = KEY_BACKSPACE Then
+				currentCommand = currentCommand[0..currentCommand.length - 1]
 			Else
 				currentCommand:+ Upper(Chr(c))	
 			EndIf
@@ -85,7 +87,9 @@ Type CommandConsole Extends Sprite
 			Case "FPS"
 				printf("Frames per seccond is set to " + WE.FPS)
 			Default
-				printf("Command not found") 
+				If Not commandEnteredCallback Or Not commandEnteredCallback(pCommand) Then
+					printf("Command not found")
+				EndIf 
 		EndSelect
 	EndMethod
 	
