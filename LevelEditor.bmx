@@ -9,10 +9,9 @@ Type LevelEditor Extends Level
 	Field imgX:Int = 0
 	Field h:Hero
 	Field sprite1:Sprite
-	Global platforms:TList = CreateList()
+	Field platforms:TList = CreateList()
 	Field currentDraw:Sprite
 	Global instance:LevelEditor
-
 	
 	Const STATE_IDLE:Int = 10;
 	Const STATE_DRAWING:Int = 20;
@@ -22,6 +21,13 @@ Type LevelEditor Extends Level
 		passToStateIdle()
 		WE.console.commandEnteredCallback = Self.processCommands
 		instance = Self
+		
+		h = Hero.createHero()
+		h.init()
+		h.x = 100
+		h.y = 100
+		
+		addChild(h)	
 	EndMethod 
 
 	Method preDraw()
@@ -35,7 +41,20 @@ Type LevelEditor Extends Level
 				processStateIdle()
 			Case STATE_DRAWING
 				processStateDrawing()
-		EndSelect 
+		EndSelect
+		
+		For Local rect:Sprite = EachIn Self.platforms
+			If(h.Overlap(rect))
+				rect.collidesAB(h)
+				SetColor(255, 0, 0)
+				Local text:String = "Collided!!"
+				DrawRect(200, 0, TextWidth(text), TextHeight(text))
+				SetColor(255, 255, 255)
+				DrawText(text, 200, 0)	
+			EndIf
+		Next
+		
+		 
 		Super.draw()
 	EndMethod
 	
@@ -86,14 +105,14 @@ Type LevelEditor Extends Level
 					Local parameter:String = maincommands[1]
 					Local file:TStream = WriteFile(parameter + ".lvl")
 					
-					For Local rect:Sprite = EachIn Self.platforms
+					For Local rect:Sprite = EachIn instance.platforms
 						Local line:String = "" + rect.x + "," + rect.y + "," + rect.w + "," + rect.h
 						WE.console.printf("saving " + line + "...")
 						WriteLine file, line
 					Next
 	
 					CloseFile file
-					WE.console.printf("" + Self.platforms.count() + " OBJECTS SAVED!!!")
+					WE.console.printf("" + instance.platforms.count() + " OBJECTS SAVED!!!")
 				EndIf
 			Case "LOAD"
 				If maincommands.length = 1 Then
@@ -109,12 +128,12 @@ Type LevelEditor Extends Level
 						Local loadedObject:Sprite = Sprite.createSprite(Int(rec[0]), Int(rec[1]), Int(rec[2]), Int(rec[3]))
 						loadedObject.alpha = 0.75
 						instance.addChild(loadedObject)
-						ListAddLast(platforms, loadedObject)
+						ListAddLast(instance.platforms, loadedObject)
 						line = ReadLine$(file)
 					EndWhile
 	
 					CloseFile file
-					WE.console.printf("" + Self.platforms.count() + " OBJECTS LOADED!!!")
+					WE.console.printf("" + instance.platforms.count() + " OBJECTS LOADED!!!")
 					Return True
 				EndIf
 			Case "LOADBG"
@@ -125,15 +144,27 @@ Type LevelEditor Extends Level
 					instance.backImage = LoadImage(parameter)
 				EndIf
 				Return True
+			Case "SCREENSHOT"
+				If maincommands.length = 1 Then
+					WE.console.printf("parameter missing") 
+				Else
+					Local parameter:String = maincommands[1]
+					Local gfxGrab:TPixmap
+					gfxGrab = GrabPixmap(0,0, 640, 480)
+					SavePixmapPNG(gfxGrab, parameter + ".png", 9)
+				EndIf
+				Return True
+
 			Case "RESET"
 				ClearList(instance.childs)
-				ClearList(platforms)
+				ClearList(instance.platforms)
+				instance.addchild(instance.h)
 			Default
 				Return False
 		EndSelect
 		
 		Return True
-	EndFunction
+	EndFunction 
 EndType
 
 
