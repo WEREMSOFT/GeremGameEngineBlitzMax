@@ -1,6 +1,6 @@
 SuperStrict
 Import "gameobject.bmx"
-
+Import "animation.bmx"
 
 Type Sprite Extends GameObject
 	Field w:Int
@@ -13,6 +13,8 @@ Type Sprite Extends GameObject
 	Field followOffsetY:Int = 0
 	Field alpha:Float = 1.0
 	Field debug:Int = True
+	Field animations:TMap
+	Field currentAnimation:Animation
 	
 	Function CreateSprite:Sprite(pX:Int = 0, pY:Int = 0, pW:Int = 0, pH:Int = 0)
 		Local ReturnValue:Sprite = New Sprite
@@ -20,13 +22,21 @@ Type Sprite Extends GameObject
 		returnValue.x = pX
 		returnValue.w = pW
 		returnValue.y = pY
-		returnValue.h = pH		
+		returnValue.h = pH
+		
 		Return returnValue
 	EndFunction
 	
 	Function RectsOverlap:Int(r1:Sprite, r2:Sprite)
 		Return ((r1.x + r1.w > r2.x) And (r1.y + r1.h > r2.y) And (r1.x < r2.x + r2.w) And (r1.y < r2.y + r2.h))
 	End Function
+	
+	Method setAnimation(animationName:String)
+		Print(animationName)
+		Print String(Animation(MapValueForKey(animations,animationName)).endFrame)
+		currentAnimation = Animation(MapValueForKey(animations,animationName))
+		Print currentAnimation.startFrame
+	EndMethod
 	
 	
 	Method Overlap:Int(otherRect:Sprite)
@@ -39,6 +49,7 @@ Type Sprite Extends GameObject
 		colorR = Rand(0, 255)
 		colorG = Rand(0, 255)
 		colorB = Rand(0, 255)
+		animations = CreateMap()
 	EndMethod
 	
 	Method update()

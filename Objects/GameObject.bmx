@@ -5,14 +5,17 @@ Type GameObject
 	Field childs:TList = CreateList()
 	Field x:Int = 0
 	Field y:Int = 0
+	Field z:Int = 0
 	Field state:Int = 0
 	Field parent:GameObject
+	
 	
 	Method init()
 	EndMethod
 	
 	Method addChild(pChild:GameObject)
 		ListAddLast(childs, pChild)
+		childs.sort(false, compareChilds)
 		pChild.parent = Self 
 	EndMethod
 	
@@ -44,6 +47,14 @@ Type GameObject
 			child.postDraw
 		Next
 	EndMethod
+
+	Function compareChilds:Int(o1:Object, o2:Object)
+		If GameObject(o1).z > GameObject(o2).z Then
+			Return False
+		Else
+			Return True
+		EndIf
+	EndFunction
 
 EndType
 

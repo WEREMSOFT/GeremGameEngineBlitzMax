@@ -23,7 +23,6 @@ Type LevelEditor Extends Level
 		instance = Self
 		
 		h = Hero.createHero()
-		h.init()
 		h.x = 100
 		h.y = 100
 		
@@ -68,6 +67,7 @@ Type LevelEditor Extends Level
 			Local tempY:Float = Floor(MouseY()/16) * 16
 			currentDraw = Sprite.createSprite(tempX, tempY)
 			currentDraw.alpha = 0.75
+			currentDraw.z = childs.count()
 			addChild(currentDraw)
 			ListAddLast(platforms, currentDraw)
 			passToStateDrawing()

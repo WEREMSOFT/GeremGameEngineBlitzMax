@@ -5,7 +5,6 @@ Import "objects\weremEngine.bmx"
 
 Type Hero Extends Sprite
 	Field My_Animation:TImage 
-	Field frameRate:Int = 1000/15
 	Field angle:Double = 0.0
 	Field amplitude:Int = 10
 	Field rgba:Int
@@ -23,8 +22,12 @@ Type Hero Extends Sprite
 	
 	Function createHero:Hero()
 		Local returnValue:Hero = New Hero
-
 		returnValue.init()
+		Print "creating animations"
+		MapInsert(returnValue.animations, "walk", Animation.createAnimation(5, 15, 1000/10))
+		MapInsert(returnValue.animations, "idle", Animation.createAnimation(1, 5, 1000/10))
+		Print String(Animation(MapValueForKey(returnValue.animations,"idle")).endFrame)
+
 		Return returnValue		
 	EndFunction
 	
@@ -32,11 +35,10 @@ Type Hero Extends Sprite
 		Super.init()
 		AutoMidHandle(True)
 		debug = False
-		My_Animation = LoadAnimImage("Media/PapersPlease.png",64,64,0,17)
+		My_Animation = LoadAnimImage("Media/PapersPlease.png",64,64,0,36)
 		state = Hero.STATE_RUNNING
 		w = 14
 		h = 33
-		'SetImageHandle(my_animation, 32, 64)
 	EndMethod
 	
 	Method preDraw()
@@ -56,13 +58,20 @@ Type Hero Extends Sprite
 	
 	Method passToStateIdle()
 		state = Hero.STATE_IDLE
+		Print("setting idle")
+		setAnimation("idle")
 		frame = 0
 	EndMethod
 	
 	Method passToStateRunning()
 		If(state <> Hero.STATE_RUNNING) Then 
 			state = Hero.STATE_RUNNING
-			frame = 1
+			setAnimation("walk")
+			If Not currentAnimation Then
+				Print "Es null"
+			EndIf
+			Print currentAnimation.startFrame
+			frame = currentAnimation.startFrame
 		EndIf
 	EndMethod
 	
@@ -71,20 +80,20 @@ Type Hero Extends Sprite
 		lastPositionX = x
 		lastPositionY = y
 		If KeyDown(KEY_LEFT) Then
-			x:- 5;
+			x:- 2;
 			flipped = -1 
 			pressed = 1
 		ElseIf KeyDown(KEY_RIGHT) Then
-			x:+ 5
+			x:+ 2
 			flipped = 1
 			pressed = 1
 		EndIf
 		
 		If KeyDown(KEY_UP) Then
-			y:- 5;
+			y:- 2
 			pressed = 1
 		ElseIf KeyDown(KEY_DOWN) Then
-			y:+ 5
+			y:+ 2
 			pressed = 1
 		EndIf
 		If lastPositionX <> x Or lastPositionY <> y Then
@@ -95,18 +104,15 @@ Type Hero Extends Sprite
 	EndMethod
 	
 	Method processStateRunning()
-		If(MilliSecs() - elapsedTime > framerate)
+		If(MilliSecs() - elapsedTime > currentAnimation.framerate)
 			Frame:+1
-			If Frame > 16 Then 
-				Frame=1 
+			If Frame > currentAnimation.endFrame Then 
+				Frame = currentAnimation.startFrame
 			EndIf
 			elapsedTime = MilliSecs()
 		EndIf
 		SetTransform 0, flipped, 1
 		Local imageOffset:Int = 0
-		If flipped < 0 Then
-			'imageOffset = 64
-		EndIf
 		DrawImage(My_Animation,x + imageOffsetX,y + imageOffsetY,Frame)
 		SetTransform 0, 1, 1
 	EndMethod
