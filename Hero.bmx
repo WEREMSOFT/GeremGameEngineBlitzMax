@@ -24,6 +24,7 @@ Type Hero Extends Sprite
 		returnValue.init()
 		MapInsert(returnValue.animations, "walk", Animation.createAnimation(5, 15, 1000/10))
 		MapInsert(returnValue.animations, "idle", Animation.createAnimation(0, 2, 2000))
+		MapInsert(returnValue.animations, "run", Animation.createAnimation(17, 31, 1000/15))
 		Return returnValue		
 	EndFunction
 	
@@ -39,6 +40,7 @@ Type Hero Extends Sprite
 	
 	Method preDraw()
 		Super.preDraw()
+		processCommon()
 	EndMethod
 		
 	Method draw()
@@ -59,7 +61,7 @@ Type Hero Extends Sprite
 	Method passToStateRunning()
 		If(state <> Hero.STATE_RUNNING) Then 
 			state = Hero.STATE_RUNNING
-			setAnimation("walk")
+			setAnimation("run")
 		EndIf
 	EndMethod
 	
@@ -90,7 +92,6 @@ Type Hero Extends Sprite
 	
 	
 	Method processStateRunning()
-		processCommon()
 		If lastPositionX = x And lastPositionY = y Then
 			passToStateIdle
 		EndIf
@@ -98,7 +99,6 @@ Type Hero Extends Sprite
 	EndMethod
 	
 	Method processStateIdle()
-		processCommon()
 		If lastPositionX <> x Or lastPositionY <> y Then
 			passToStateRunning
 		EndIf
