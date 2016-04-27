@@ -15,6 +15,12 @@ Type Sprite Extends GameObject
 	Field debug:Int = True
 	Field animations:TMap
 	Field currentAnimation:Animation
+	Field elapsedTime:Int = 0
+	Field Frame:Int = 0
+	Field flipped:Int = 1
+	Field SpriteSheet:TImage
+	Field imageOffsetX:Int = 8
+	Field imageOffsetY:Int = 18 
 	
 	Function CreateSprite:Sprite(pX:Int = 0, pY:Int = 0, pW:Int = 0, pH:Int = 0)
 		Local ReturnValue:Sprite = New Sprite
@@ -32,10 +38,8 @@ Type Sprite Extends GameObject
 	End Function
 	
 	Method setAnimation(animationName:String)
-		Print(animationName)
-		Print String(Animation(MapValueForKey(animations,animationName)).endFrame)
 		currentAnimation = Animation(MapValueForKey(animations,animationName))
-		Print currentAnimation.startFrame
+		frame = currentAnimation.startFrame
 	EndMethod
 	
 	
@@ -92,6 +96,20 @@ Type Sprite Extends GameObject
 
 	Method collidesBA(sp:Sprite)
 		collisionReaction(sp, Self)
+	EndMethod
+	
+	Method performAnimation()
+		If(MilliSecs() - elapsedTime > currentAnimation.framerate)
+			Frame:+1
+			If Frame > currentAnimation.endFrame Then 
+				Frame = currentAnimation.startFrame
+			EndIf	
+			elapsedTime = MilliSecs()
+		EndIf	
+		SetTransform 0, flipped, 1
+		Local imageOffset:Int = 0
+		DrawImage(SpriteSheet,x + imageOffsetX,y + imageOffsetY,Frame)
+		SetTransform 0, 1, 1
 	EndMethod
 	
 	Function collisionReaction(rect1:Sprite, rect2:Sprite)

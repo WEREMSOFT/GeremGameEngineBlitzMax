@@ -10,7 +10,7 @@ SetGraphicsDriver GLMax2DDriver()
 
 
 
-Graphics 640, 480, 32
+Graphics 640, 480
 
 WE.setFPS(30);
 
