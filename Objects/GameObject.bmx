@@ -15,8 +15,10 @@ Type GameObject
 	
 	Method addChild(pChild:GameObject)
 		ListAddLast(childs, pChild)
-		childs.sort(false, compareChilds)
-		pChild.parent = Self 
+		childs.sort(False, compareChilds)
+		pChild.parent = Self
+		onChildAdded(pChild)
+		pChild.onAddedToParent(Self)
 	EndMethod
 	
 	Method removeChild(pChild:GAmeObject)
@@ -28,6 +30,14 @@ Type GameObject
 		For Local child:GameObject = EachIn childs
 			child.update
 		Next
+	EndMethod
+	
+	Method onChildAdded(pChild:GameObject)
+		Print "child added!"
+	EndMethod
+	
+	Method onAddedToParent(pParent:GameObject)
+		Print "addedToParent!!"
 	EndMethod
 	
 	Method preDraw()
