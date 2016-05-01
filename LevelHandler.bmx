@@ -26,7 +26,7 @@ Type LevelHandler Extends GameObject
 		
 		myIntro.targetLevelOnFinish = myLevelEditor
 		
-		WE.addChild(myTurtlePaint)
+		WE.addChild(myLevelEditor)
 		
 		'Local myDebugText:DebugText = New DebugText
 		'WE.addChild(myDebugText)

@@ -6,11 +6,11 @@ Import "Level1.bmx"
 Import "LevelHandler.bmx"
 
 
-SetGraphicsDriver GLMax2DDriver()
+'SetGraphicsDriver GLMax2DDriver()
 
 
 
-Graphics 640, 480, 16
+Graphics 640, 480
 
 WE.setFPS(30);
 

@@ -8,6 +8,7 @@ Type Hero Extends Sprite
 	Field angle:Double = 0.0
 	Field amplitude:Int = 10
 	Field rgba:Int
+	Field speed:Int = 2
 
 
 
@@ -18,13 +19,12 @@ Type Hero Extends Sprite
 	
 	Global STATE_IDLE:Int = 0
 	Global STATE_RUNNING:Int = 1
+	Global STATE_WALKING:Int = 2
 	
 	Function createHero:Hero()
 		Local returnValue:Hero = New Hero
 		returnValue.init()
-		MapInsert(returnValue.animations, "walk", Animation.createAnimation(5, 15, 1000/10))
-		MapInsert(returnValue.animations, "idle", Animation.createAnimation(0, 2, 2000))
-		MapInsert(returnValue.animations, "run", Animation.createAnimation(17, 31, 1000/15))
+		
 		Return returnValue		
 	EndFunction
 	
@@ -32,8 +32,11 @@ Type Hero Extends Sprite
 		Super.init()
 		AutoMidHandle(True)
 		debug = False
-		SpriteSheet = LoadAnimImage("Media/PapersPlease.png",64,64,0,36)
-		state = Hero.STATE_RUNNING
+		SpriteSheet = LoadAnimImage("Media/PapersPleasecolor.png",64,64,0,36)
+		MapInsert(animations, "walk", Animation.createAnimation(5, 15, 1000/10))
+		MapInsert(animations, "idle", Animation.createAnimation(0, 2, 2000))
+		MapInsert(animations, "run", Animation.createAnimation(17, 31, 1000/15))
+		passToStateIdle()
 		w = 14
 		h = 33
 	EndMethod
@@ -46,19 +49,31 @@ Type Hero Extends Sprite
 	Method draw()
 		Select state
 			Case Hero.STATE_IDLE
-				processStateIdle
+				processStateIdle()
 			Case Hero.STATE_RUNNING
 				processStateRunning()
+			Case Hero.STATE_WALKING
+				processStateWalking()
 		EndSelect
 		Super.draw()
 	EndMethod
 	
 	Method passToStateIdle()
+		Print "pasando a idle"
 		state = Hero.STATE_IDLE
 		setAnimation("idle")
 	EndMethod
 	
+	Method passToStateWalking()
+		'Print "pasando a walking"
+		If(state <> Hero.STATE_WALKING) Then 
+			state = Hero.STATE_WALKING
+			setAnimation("walk")
+		EndIf
+	EndMethod
+	
 	Method passToStateRunning()
+		'Print "pasando a running"
 		If(state <> Hero.STATE_RUNNING) Then 
 			state = Hero.STATE_RUNNING
 			setAnimation("run")
@@ -69,40 +84,67 @@ Type Hero Extends Sprite
 		Local pressed:Int = 0
 		lastPositionX = x
 		lastPositionY = y
+		
+		If KeyDown(KEY_LSHIFT) Or KeyDown(KEY_RSHIFT) Then
+			speed = 5
+		Else
+			speed = 2
+		EndIf
+		
 		If KeyDown(KEY_LEFT) Then
-			x:- 2;
+			x:- speed;
 			flipped = -1 
 			pressed = 1
 		ElseIf KeyDown(KEY_RIGHT) Then
-			x:+ 2
+			x:+ speed
 			flipped = 1
 			pressed = 1
 		EndIf
 		
 		If KeyDown(KEY_UP) Then
-			y:- 2
+			y:- speed
 			pressed = 1
 		ElseIf KeyDown(KEY_DOWN) Then
-			y:+ 2
+			y:+ speed
 			pressed = 1
 		EndIf
-		
 	EndMethod
 	
-	
+	Method processStateWalking()
+		checkPositions()
+		performAnimation()
+	EndMethod
 	
 	Method processStateRunning()
+		checkPositions()
+		performAnimation()
+	EndMethod
+	
+	Method checkPositions()
 		If lastPositionX = x And lastPositionY = y Then
 			passToStateIdle
+		Else
+			checkSpeed()
 		EndIf
-		performAnimation()
 	EndMethod
 	
 	Method processStateIdle()
 		If lastPositionX <> x Or lastPositionY <> y Then
-			passToStateRunning
+			Print "###"
+			Print lastPositionX
+			Print x
+			Print "###"
+			checkSpeed()
 		EndIf
 		performAnimation()
+	EndMethod
+	
+	Method checkSpeed()
+		If speed = 5 Then
+			passToStateRunning
+		Else
+			passToStateWalking
+		EndIf
 	EndMethod
 	
 EndType
