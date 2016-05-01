@@ -2,7 +2,7 @@ SuperStrict
 
 Import "objects\Level.bmx"
 Import "objects\Sprite.bmx"
-Import "Hero.bmx"
+Import "sprites\Hero.bmx"
 
 
 

@@ -1,7 +1,7 @@
 
 SuperStrict
-Import "objects\Sprite.bmx"
-Import "objects\weremEngine.bmx"
+Import "..\objects\Sprite.bmx"
+Import "..\objects\weremEngine.bmx"
 
 Type Hero Extends Sprite
 

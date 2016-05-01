@@ -1,8 +1,3 @@
-
-
-
-
-
 Type CommandConsole Extends Sprite
 	Field commands:TList = CreateList()
 	Const STATE_IDLE:Int = 10
@@ -10,8 +5,9 @@ Type CommandConsole Extends Sprite
 	Field commandEnteredCallback:Int(pCommand:String)
 	Field visible:Int = False
 	Field currentCommand:String = ""
-	Field textX:Int = 0
+	Field textY:Int = 0
 	Field lastupdate:Int = 0
+	Field showSystemDebugInfo:Int = True
 	
 	Function createConsole:CommandConsole()
 		Local returnValue:CommandConsole = New CommandConsole
@@ -55,6 +51,10 @@ Type CommandConsole Extends Sprite
 			passToStateIdle()
 		EndIf
 		
+		If(KeyHit(KEY_UP)) Then
+			currentCommand = String(commands.ValueAtIndex(commands.count() - 2)).split(">")[1]
+		EndIf
+		
 		Local c:Int = GetChar()
 
 		If c Then
@@ -79,16 +79,22 @@ Type CommandConsole Extends Sprite
 			Case "CLEAR"
 				ClearList(commands)
 				printf("Ok")
-			Case "QUIT"
+			Case "QUIT", "Q"
 				Local evt:TEvent = CreateEvent(EVENT_WINDOWCLOSE)
 				EmitEvent(evt)
 			Case "MEM"
 				printf("Allocated memory: " + GCMemAlloced())
 			Case "FPS"
 				printf("Frames per seccond is set to " + WE.FPS)
+			Case "FULLSCREEN ON"
+				Graphics 640, 480, 16
+			Case "FULLSCREEN OFF"
+				Graphics 640, 480
 			Default
 				If Not commandEnteredCallback Or Not commandEnteredCallback(pCommand) Then
 					printf("Command not found")
+				Else
+					printf("Ok")	
 				EndIf 
 		EndSelect
 	EndMethod
@@ -98,20 +104,26 @@ Type CommandConsole Extends Sprite
 		If visible Then
 			debugDraw()
 			SetColor(150, 150, 150)
-			textX = 0
-			
-			showSystemInfo()
+			textY = y
+			If showSystemDebugInfo Then
+				showSystemInfo()
+			EndIf
 			
 			For Local cmd:String = EachIn commands
-				DrawText(cmd, 0, textX)
+				DrawText(cmd, 0, textY)
 				newLine()
 			Next
-			DrawText(">" + currentCommand, 0, textX)
+			DrawText(">" + currentCommand, 0, textY)
 		EndIf
 	EndMethod
 	
 	Method newLine()
-		textX:+TextHeight("test")
+		
+		If textY + TextHeight("test") * 2 > GraphicsHeight() Then
+			commands.RemoveFirst()
+		Else
+			textY:+TextHeight("test")
+		EndIf
 	EndMethod
 	
 	Method showSystemInfo()
@@ -120,11 +132,11 @@ Type CommandConsole Extends Sprite
 		If elapsedTime <> 0 Then
 			FPS = 1000 / elapsedTime
 		EndIf
-		DrawText("FPS: " + String.fromInt(FPS), 0, textX)
+		DrawText("FPS: " + String.fromInt(FPS), 0, textY)
 		newLine()
-		DrawText("Elapsed Time: " +  String.fromInt(elapsedTime), 0, textX)
+		DrawText("Elapsed Time: " +  String.fromInt(elapsedTime), 0, textY)
 		newLine()
-		DrawText("MEM: " +  GCMemAlloced(), 0, textX)
+		DrawText("MEM: " +  GCMemAlloced(), 0, textY)
 		newLine()
 		lastUpdate = MilliSecs()
 	EndMethod
